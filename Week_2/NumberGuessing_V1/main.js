@@ -9,7 +9,7 @@ function playGame(){
     
     
     var from = parseInt(prompt("Enter a lower bound, that is in between 0 and 1000"));
-    //Keeps asking for a new Lower Bound
+    //Keeps asking for a new Lower Bound, until it gets one that satisifes all requierments
     var fromSatisfiesRequirements=false;
     while(!fromSatisfiesRequirements){
         if(!doesStringContainANumber(from)){
@@ -21,22 +21,23 @@ function playGame(){
             from = prompt("Lower Bound value not in range 0 to 1000, enter a new one")
         }
         else{
+            //Welql it's a number and in range, stop annoying them for a number
             fromSatisfiesRequirements=true;
         }
     }
     
     
-    var to = parseInt(prompt("Enter a higher bound, that's between "+from+" and 1000"));
-    //Keeps asking for a new Upper Bound
+    var to = askForANumber("Enter a higher bound, that's between "+from+" and 1000");
+    //Keeps asking for a new Upper Bound, until it gets one that satisfies all requirements
     var toSatisifiesRequirements=false;
     while(!toSatisifiesRequirements){
         if(!doesStringContainANumber(to)){
             //It's not a number
-            to = prompt("Higher Bound value not a number, enter a number for the higher bound");
+            to = askForANumber("Higher Bound value not a number, enter a number for the higher bound");
         }
         else if(!isNumberInRange(to,0,1000)){
             //It's a number though not in range
-            to = prompt("Higher Bound value not in range "+from+" to 1000, enter a new one")
+            to = askForANumber("Higher Bound value not in range "+from+" to 1000, enter a new one")
         }
         else{
             //Well it's a number and in range, stop annoying them for a number
@@ -48,19 +49,19 @@ function playGame(){
     //If the lower bound is greater than or equal to the upper bound keep asking for the higher bound
     while(from>=to){
         if(from>=to){
-            to = prompt("Higher Bound value too low, make sure higher bound greater than "+from);
+            to = askForANumber("Higher Bound value too low, make sure higher bound greater than "+from);
         }
         else if(to>1000){
-            to = prompt("Higher Bound value not in range 0 to 1000, enter a new one");
+            to = askForANumber("Higher Bound value not in range 0 to 1000, enter a new one");
         }
     }
     
 
     //Get an Integer between [from,to]
     //Math.random() returns decimals, so round returns an integer from the decimal
-    var target = Math.round(Math.random() * (to - from) + from);
+    var target = randomInteger(from,to);
 
-    var currentGuess = parseInt(prompt("Guess a number between " + to + " and " + from));
+    var currentGuess = askForANumber("Guess a number between " + to + " and " + from);
 
     var totalGuesses = 1;
     
@@ -78,15 +79,16 @@ function playGame(){
             totalGuesses++;
         }
         
-        var guessSatisfiesRequirements = false;
+        
         
         //Keeps looping if currentGuess doesn't satsify requirements until it does
+        var guessSatisfiesRequirements = false;
         while(!guessSatisfiesRequirements){
             if(!doesStringContainANumber(currentGuess)){
-                currentGuess = prompt("Guess is not a number, enter a guess that's a number");
+                currentGuess = askForANumber("Guess is not a number, enter a guess that's a number");
             }
             else if(!isNumberInRange(currentGuess,from,to)){
-                    currentGuess = prompt("Guess " + currentGuess + " is not in between "+from+" and "+to+", enter a new number that is in this range");
+                    currentGuess = askForANumber("Guess " + currentGuess + " is not in between "+from+" and "+to+", enter a new number that is in this range");
             }
             else{
                 guessSatisfiesRequirements = true;
@@ -95,6 +97,14 @@ function playGame(){
     }
 
     alert("It took "+ totalGuesses +" tries to guess the correct number");
+}
+
+function askForANumber(question){
+    return parseInt(prompt(question));
+}
+
+function randomInteger(lowestNumber, highestNumber){
+   return Math.round(Math.random() * (highestNumber - lowestNumber) + lowestNumber);
 }
 
 //Basically returns whether or not 
