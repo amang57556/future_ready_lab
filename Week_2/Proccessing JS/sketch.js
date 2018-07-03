@@ -1,15 +1,17 @@
 //Setup is run once at the beginning before we draw
 var ballList = [];
+//An Array containing the background color, value changed in setup
+var backgroundColor = [255,0,255];
 function setup(){
+    backgroundColor = randomColor();
     background(backgroundColor);
     createCanvas(promptForANumber("the width of the canvas"),promptForANumber("the height of the canvas"));
     frameRate(10000);
     ballList = makeRandomAmountOfBalls();
-    background(backgroundColor);
+    
 }
 
-//An Array containing the background color
-var backgroundColor = [255,0,255];
+
 
 function Ball(x,y,diameter,color,xSpeed,ySpeed){
     this.diameter=diameter;
