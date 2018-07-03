@@ -56,7 +56,7 @@ function randomColor(){
 //Returns an array of random balls
 function makeRandomAmountOfBalls(){
      amountOfBalls = 0;
-    //Want to make either 2,4,8 or 16 balls, so use powers of 2
+    //The list is of the potential amount of balls we want, and then the random picture randomly picks a number to make
     var listOfPotentialBallNumbers=[2,5,10,16];
     amountOfBalls = random(listOfPotentialBallNumbers);
     
