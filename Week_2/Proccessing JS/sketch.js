@@ -1,6 +1,7 @@
 //Setup is run once at the beginning before we draw
 var ballList = [];
 function setup(){
+    background(backgroundColor);
     createCanvas(promptForANumber("the width of the canvas"),promptForANumber("the height of the canvas"));
     frameRate(10000);
     ballList = makeRandomAmountOfBalls();
@@ -8,7 +9,7 @@ function setup(){
 }
 
 //An Array containing the background color
-var backgroundColor = [0,0,0];
+var backgroundColor = [255,0,255];
 
 function Ball(x,y,diameter,color,xSpeed,ySpeed){
     this.diameter=diameter;
@@ -54,7 +55,8 @@ function randomColor(){
 function makeRandomAmountOfBalls(){
      amountOfBalls = 0;
     //Want to make either 2,4,8 or 16 balls, so use powers of 2
-    amountOfBalls = Math.pow(2,random(0,4));
+    var listOfPotentialBallNumbers=[2,5,10,16];
+    amountOfBalls = random(listOfPotentialBallNumbers);
     
     
     //Loops the amount of times that there are balls to make, creating a random ball each iteration
