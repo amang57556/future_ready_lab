@@ -66,18 +66,38 @@ function draw(){
             var inContact=circlesInContact(ballList[ballIteration],ballList[ball2Iteration]);
             if(inContact){
                 //Handle Them Being in Contact
+                var rightBall = ballList[ballIteration];//Initializes the first ball to be treated as the right ball
+                var leftBall = ballList[ball2Iteration];//Initialized the second ball to be treated as the left ball
                 
-                var notCollidingByAxis = circlesMovingAway(ballList[ballIteration],ballList[ball2Iteration]);//Basically if they ain't moving away from each other, they colliding
-                if(!notCollidingByAxis[0]){
-                    //If the two balls aren't moving away make them
-                    //For the X-Axis ONLY
-                    ballList[ball2Iteration].xSpeed=-ballList[ball2Iteration].xSpeed;//Sets it to the later one to avoid messing up any previous changes to speeds
-                    
+                if(rightBall.xCoor<leftBall.xCoor){
+                    //Basically if the "right" is to the left of the left, then swap the two variables around
+                    rightBall = ballList[ball2Iteration];
+                    leftBall = ballList[ballIteration];
                 }
-                if(!notCollidingByAxis[1]){
-                    //If the two balls aren't moving away make them
-                    //For the Y-Axis ONLY
-                    ballList[ball2Iteration].ySpeed=-ballList[ball2Iteration].ySpeed;//Sets it to the later one to avoid messing up any previous changes to speeds
+                
+                //The Goal is to get the right ball going to the right, and the left ball going to the left, so they "bounce" off each other
+                if(rightBall.xSpeed<0){
+                    rightBall.xSpeed = -rightBall.xSpeed;
+                }
+                if(leftBall.xSpeed>0){
+                    leftBall.xSpeed = -leftBall.xSpeed;
+                }
+                
+                var higherBall = ballList[ballIteration];//Initializes the first ball to be treated as the higher ball
+                var lowerBall = ballList[ball2Iteration];//Initialized the second ball to be treated as the lower ball
+                
+                if(higherBall.yCoor<lowerBall.yCoor){
+                    //Basically if the "upper" is lower than the "lower", then swap the two variables around
+                    higherBall = ballList[ball2Iteration];
+                    lowerBall = ballList[ballIteration];
+                }
+                
+                //The Goal is to get the higher ball going up, and the lower ball going down, so they "bounce" off each other
+                if(higherBall.ySpeed<0){
+                    higherBall.ySpeed = -higherBall.ySpeed;
+                }
+                if(lowerBall.ySpeed>0){
+                    lowerBall.ySpeed = -lowerBall.ySpeed;
                 }
                 
             }    
@@ -131,6 +151,8 @@ function promptForANumber(reason){
     }
     return parseInt(response);
 }
+
+
 //Determines whether circle is moving away or towards each other, returns boolean array for x and y axis
 function circlesMovingAway(ball1,ball2){
     return [circleMovingAwayOnOneAxis(ball1.xCoor,ball1.xSpeed,ball2.xCoor,ball2.xSpeed),circleMovingAwayOnOneAxis(ball1.yCoor,ball1.ySpeed,ball2.yCoor,ball2.ySpeed)];
