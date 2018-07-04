@@ -33,12 +33,26 @@ function draw(){
         //If the x coordinate is outside of the canvas' bounds, then reverse the x-axis direction and change the circle's color
         if(ballList[i].xCoor>width || ballList[i].xCoor<0){
             ballList[i].color=randomColor();
-            ballList[i].xSpeed = -ballList[i].xSpeed;
+            
+            //Make Sure the sign change orients the ball back into the canvas
+            if(ballList[i].xCoor<0 && ballList[i].xSpeed<0){
+                ballList[i].xSpeed = -ballList[i].xSpeed;
+            }
+            else if(ballList[i].xCoor>width && ballList[i].xSpeed>0){
+                ballList[i].xSpeed = -ballList[i].xSpeed;
+            }
         }
         //If the y coordinate is outside of the canvas' bounds, then reverse the y-axis direction and change the circle's size
         if(ballList[i].yCoor>height || ballList[i].yCoor<0){
-            ballList[i].ySpeed = -ballList[i].ySpeed;
-            ballList[i].diameter=random(25,100);
+            ballList[i].diameter=randomInteger(25,100);
+            
+            //Make Sure the sign change orients the ball back into the canvas
+            if(ballList[i].yCoor<0 && ballList[i].ySpeed<0){
+                ballList[i].ySpeed = -ballList[i].ySpeed;
+            }
+            else if(ballList[i].yCoor>height && ballList[i].ySpeed>0){
+                ballList[i].ySpeed = -ballList[i].ySpeed;
+            }
         }
        
     }
@@ -55,7 +69,6 @@ function draw(){
                 
                 var notCollidingByAxis = circlesMovingAway(ballList[ballIteration],ballList[ball2Iteration]);//Basically if they ain't moving away from each other, they colliding
                 if(!notCollidingByAxis[0]){
-                    console.log("Some balls ain't colling on the x-axis");
                     //If the two balls aren't moving away make them
                     //For the X-Axis ONLY
                     ballList[ball2Iteration].xSpeed=-ballList[ball2Iteration].xSpeed;//Sets it to the later one to avoid messing up any previous changes to speeds
@@ -64,7 +77,6 @@ function draw(){
                 if(!notCollidingByAxis[1]){
                     //If the two balls aren't moving away make them
                     //For the Y-Axis ONLY
-                    console.log("Some balls ain't colling on the y-axis");
                     ballList[ball2Iteration].ySpeed=-ballList[ball2Iteration].ySpeed;//Sets it to the later one to avoid messing up any previous changes to speeds
                 }
                 
@@ -84,7 +96,7 @@ function draw(){
 
 //Returns a random color, in the form of a array with values for Red, Green, Blue
 function randomColor(){      
-    return [random(0,255),random(0,255),random(0,255)];
+    return [randomInteger(0,255),randomInteger(0,255),randomInteger(0,255)];
 }
 
 //Returns an array of random balls
@@ -92,7 +104,7 @@ function makeRandomAmountOfBalls(){
      amountOfBalls = 0;
     //The list is of the potential amount of balls we want, and then the random picture randomly picks a number to make
     var listOfPotentialBallNumbers=[2,5,10,16];
-    amountOfBalls = random(listOfPotentialBallNumbers);
+    amountOfBalls = randomInteger(listOfPotentialBallNumbers);
     
     
     //Loops the amount of times that there are balls to make, creating a random ball each iteration
@@ -106,7 +118,7 @@ function makeRandomAmountOfBalls(){
 
 //Makes A Totally Random Ball
 function makeRandomBall(){
-    return new Ball(random(0,width),random(0,height),random(0,100),randomColor(),random(-5,5),random(-5,5));
+    return new Ball(randomInteger(0,width),randomInteger(0,height),randomInteger(0,100),randomColor(),randomInteger(-5,5),randomInteger(-5,5));
 }
 
 //Prompts for a mumber with a reason
@@ -188,4 +200,9 @@ function distancePoints(x1,y1,x2,y2){
     //So it returns distance
     var distanceSquared = Math.pow((x2-x1),2) + Math.pow((y2-y1),2);
     return Math.sqrt(distanceSquared);
+}
+
+//Proccessing random, returns a random float in range so this basically just converts the random number to a actual integer
+function randomInteger(low,up){
+    return parseInt(random(low,up));
 }
