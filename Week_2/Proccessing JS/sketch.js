@@ -69,6 +69,18 @@ function draw(){
                 var rightBall = ballList[ballIteration];//Initializes the first ball to be treated as the right ball
                 var leftBall = ballList[ball2Iteration];//Initialized the second ball to be treated as the left ball
                 
+                if(Math.abs(rightBall.xSpeed)!==Math.abs(leftBall.xSpeed)){
+                    var avgXSpeed = (Math.abs(rightBall.xSpeed)+Math.abs(leftBall.xSpeed))/2;
+                    rightBall.xSpeed=avgXSpeed;
+                    leftBall.xSpeed=avgXSpeed;
+                }
+                
+                if(Math.abs(rightBall.ySpeed)!==Math.abs(leftBall.ySpeed)){
+                    var avgYSpeed = (Math.abs(rightBall.ySpeed)+Math.abs(leftBall.ySpeed))/2;
+                    rightBall.ySpeed=avgYSpeed;
+                    leftBall.ySpeed=avgYSpeed;
+                }
+                
                 if(rightBall.xCoor<leftBall.xCoor){
                     //Basically if the "right" is to the left of the left, then swap the two variables around
                     rightBall = ballList[ball2Iteration];
@@ -153,50 +165,7 @@ function promptForANumber(reason){
 }
 
 
-//Determines whether circle is moving away or towards each other, returns boolean array for x and y axis
-function circlesMovingAway(ball1,ball2){
-    return [circleMovingAwayOnOneAxis(ball1.xCoor,ball1.xSpeed,ball2.xCoor,ball2.xSpeed),circleMovingAwayOnOneAxis(ball1.yCoor,ball1.ySpeed,ball2.yCoor,ball2.ySpeed)];
-}
 
-//For One Axis, determines whether the circles are moving toward or away from each other
-//Designed to be a helper function of circlesMovingAway
-function circleMovingAwayOnOneAxis(ball1Pos,ball1Speed,ball2Pos,ball2Speed){
-    if(ball1Pos>ball2Pos){
-        //There's only one way to move away, for the right one to move right, and the left one to move left. So the code returns true for that, else it returns false
-        if(ball1Speed>=0 && ball2Speed<=0){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-    //There's only one way to move away, for the right one to move right, and the left one to move left. So the code returns true for that, else it returns false. 
-    //It's the same idea for these two statements, just that the right ball is different so the code is slightly different
-    else if(ball2Pos<ball1Pos){
-        if(ball2Speed>=0 && ball1Speed<=0){
-            return true;
-        }
-        else{
-            return false;
-        }    
-    }
-    else{
-    //The goal is to get them going different directions, so if they're going the same direction they ain't moving away
-        
-            if(
-           (ball1Speed>0 && ball2Speed>0)
-            ||
-           (ball1Speed<0 && ball2Speed<0)
-           )
-           {
-            return false;       
-           }
-            else{
-                return true;
-            }
-        
-    }
-}
 
 
 function circlesInContact(ball1,ball2){
