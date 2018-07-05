@@ -69,6 +69,8 @@ function draw(){
                 var rightBall = ballList[ballIteration];//Initializes the first ball to be treated as the right ball
                 var leftBall = ballList[ball2Iteration];//Initialized the second ball to be treated as the left ball
                 
+                //These two statements average out the speed of the two colliding balls if they aren't even and set it to their speed
+                //It may seem weird to make them positive, but the bottom part takes care of that by ensuring they are diverging after their collision
                 if(Math.abs(rightBall.xSpeed)!==Math.abs(leftBall.xSpeed)){
                     var avgXSpeed = (Math.abs(rightBall.xSpeed)+Math.abs(leftBall.xSpeed))/2;
                     rightBall.xSpeed=avgXSpeed;
