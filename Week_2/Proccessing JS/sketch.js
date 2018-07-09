@@ -1,5 +1,6 @@
+
 //Setup is run once at the beginning before we draw
-var shapeList = [];
+var ballList = [];
 //An Array containing the background color, value changed in setup
 var backgroundColor = [255,0,255];
 function setup(){
@@ -7,32 +8,19 @@ function setup(){
     background(backgroundColor);
     createCanvas(promptForANumber("the width of the canvas"),promptForANumber("the height of the canvas"));
     frameRate(100);
-    shapeList = makeRandomAmountOfRandomShapes();
-    //This is to ensure the collision library works
-    rectMode(CORNER);
-    ellipseMode(CENTER);
+    ballList = makeRandomAmountOfBalls();
     
 }
 
-var maximumSpeed = 20;
 
-function Shape(x,y,dimensions,color,xSpeed,ySpeed,typeShape){
-    this.dimensions=[dimensions];
+
+function Ball(x,y,diameter,color,xSpeed,ySpeed){
+    this.diameter=diameter;
     this.color=color || [0,0,0];//Default color black, if no value
     this.xCoor=x;
     this.yCoor=y;
     this.xSpeed=xSpeed || 5;
     this.ySpeed=ySpeed || 7;
-    this.xSpeedIncrement = 1;
-    this.ySpeedIncrement = 1;
-    //Coded Value for Shape
-    /*
-        Number -> Name_Shape [What Elements in Dimension Represent]
-        1 -> Circle [Diameter]
-        2 -> Square [Side Length]
-        3 -> Rectangle [Width, Height]
-    */
-    this.typeShape = typeShape || 1;
 }
 
 function draw(){
@@ -41,51 +29,30 @@ function draw(){
     
     //Barrier Collision Loops
     //This loop goes through every index in the list, and basically handles barrier collisions
-    for(var i = 0; i<shapeList.length; i++){
+    for(var i = 0; i<ballList.length; i++){
         //These if statements modify the properties of the circle, which is then drawn
         //If the x coordinate is outside of the canvas' bounds, then reverse the x-axis direction and change the circle's color
-        if(shapeList[i].xCoor>width || shapeList[i].xCoor<0){
-            shapeList[i].color=randomColor();
+        if(ballList[i].xCoor>width || ballList[i].xCoor<0){
+            ballList[i].color=randomColor();
             
-            
-            if(Math.abs(shapeList[i].xSpeed)>maximumSpeed){
-                shapeList[i].xSpeedIncrement=-shapeList[i].xSpeedIncrement;
-            }
-            
-            if(Math.abs(shapeList[i].ySpeed)>maximumSpeed){
-                shapeList[i].ySpeedIncrement=-shapeList[i].ySpeedIncrement;
-            }
             //Make Sure the sign change orients the ball back into the canvas
-            if(shapeList[i].xCoor<0 && shapeList[i].xSpeed<0){
-                shapeList[i].xSpeed = -shapeList[i].xSpeed;
-                shapeList[i].xSpeed = changeMagnitude(shapeList[i].xSpeed,shapeList[i].xSpeedIncrement);
-                shapeList[i].ySpeed = changeMagnitude(shapeList[i].ySpeed,shapeList[i].ySpeedIncrement);
+            if(ballList[i].xCoor<0 && ballList[i].xSpeed<0){
+                ballList[i].xSpeed = -ballList[i].xSpeed;
             }
-            else if(shapeList[i].xCoor>width && shapeList[i].xSpeed>0){
-                shapeList[i].xSpeed = -shapeList[i].xSpeed;
-                shapeList[i].xSpeed = changeMagnitude(shapeList[i].xSpeed,shapeList[i].xSpeedIncrement);
-                shapeList[i].ySpeed = changeMagnitude(shapeList[i].ySpeed,shapeList[i].ySpeedIncrement);
+            else if(ballList[i].xCoor>width && ballList[i].xSpeed>0){
+                ballList[i].xSpeed = -ballList[i].xSpeed;
             }
         }
         //If the y coordinate is outside of the canvas' bounds, then reverse the y-axis direction and change the circle's size
-        if(shapeList[i].yCoor>height || shapeList[i].yCoor<0){
-            shapeList[i].dimensions[0]=randomInteger(25,100);
-            shapeList[i].xSpeed = changeMagnitude(shapeList[i].xSpeed,shapeList[i].xSpeedIncrement);
-            shapeList[i].ySpeed = changeMagnitude(shapeList[i].ySpeed,shapeList[i].ySpeedIncrement);
+        if(ballList[i].yCoor>height || ballList[i].yCoor<0){
+            ballList[i].diameter=randomInteger(25,100);
             
-            if(Math.abs(shapeList[i].xSpeed)>maximumSpeed){
-                shapeList[i].xSpeedIncrement=-shapeList[i].xSpeedIncrement;
-            }
-            
-            if(Math.abs(shapeList[i].ySpeed)>maximumSpeed){
-                shapeList[i].ySpeedIncrement=-shapeList[i].ySpeedIncrement;
-            }
             //Make Sure the sign change orients the ball back into the canvas
-            if(shapeList[i].yCoor<0 && shapeList[i].ySpeed<0){
-                shapeList[i].ySpeed = -shapeList[i].ySpeed;
+            if(ballList[i].yCoor<0 && ballList[i].ySpeed<0){
+                ballList[i].ySpeed = -ballList[i].ySpeed;
             }
-            else if(shapeList[i].yCoor>height && shapeList[i].ySpeed>0){
-                shapeList[i].ySpeed = -shapeList[i].ySpeed;
+            else if(ballList[i].yCoor>height && ballList[i].ySpeed>0){
+                ballList[i].ySpeed = -ballList[i].ySpeed;
             }
         }
        
@@ -93,16 +60,15 @@ function draw(){
     
     //Iterates through every single ball, and for each ball iterates through the balls after that
     //This ensures that we can check collisions for every possible set of balls
-    for(var shapeIteration = 0; shapeIteration<shapeList.length; shapeIteration++){
+    for(var ballIteration = 0; ballIteration<ballList.length; ballIteration++){
         //So we have a ball, now we want to iterate over every ball further ahead than it
         //One added to index of previous ball so that the loop doesn't go over it
-        for(var shape2Iteration = shapeIteration+1; shape2Iteration<shapeList.length;shape2Iteration++){
-            var inContact=shapesInContact(shapeList[shapeIteration],shapeList[shape2Iteration]);
+        for(var ball2Iteration = ballIteration+1; ball2Iteration<ballList.length;ball2Iteration++){
+            var inContact=circlesInContact(ballList[ballIteration],ballList[ball2Iteration]);
             if(inContact){
                 //Handle Them Being in Contact
-                var rightBall = shapeList[shapeIteration];//Initializes the first ball to be treated as the right ball
-                var leftBall = shapeList[shape2Iteration];//Initialized the second ball to be treated as the left ball
-                
+                var rightBall = ballList[ballIteration];//Initializes the first ball to be treated as the right ball
+                var leftBall = ballList[ball2Iteration];//Initialized the second ball to be treated as the left ball
                 
                 //These two statements average out the speed of the two colliding balls if they aren't even and set it to their speed
                 //It may seem weird to make them positive, but the bottom part takes care of that by ensuring they are diverging after their collision
@@ -120,8 +86,8 @@ function draw(){
                 
                 if(rightBall.xCoor<leftBall.xCoor){
                     //Basically if the "right" is to the left of the left, then swap the two variables around
-                    rightBall = shapeList[shape2Iteration];
-                    leftBall = shapeList[shapeIteration];
+                    rightBall = ballList[ball2Iteration];
+                    leftBall = ballList[ballIteration];
                 }
                 
                 //The Goal is to get the right ball going to the right, and the left ball going to the left, so they "bounce" off each other
@@ -132,13 +98,13 @@ function draw(){
                     leftBall.xSpeed = -leftBall.xSpeed;
                 }
                 
-                var higherBall = shapeList[shapeIteration];//Initializes the first ball to be treated as the higher ball
-                var lowerBall = shapeList[shape2Iteration];//Initialized the second ball to be treated as the lower ball
+                var higherBall = ballList[ballIteration];//Initializes the first ball to be treated as the higher ball
+                var lowerBall = ballList[ball2Iteration];//Initialized the second ball to be treated as the lower ball
                 
                 if(higherBall.yCoor<lowerBall.yCoor){
                     //Basically if the "upper" is lower than the "lower", then swap the two variables around
-                    higherBall = shapeList[shape2Iteration];
-                    lowerBall = shapeList[shapeIteration];
+                    higherBall = ballList[ball2Iteration];
+                    lowerBall = ballList[ballIteration];
                 }
                 
                 //The Goal is to get the higher ball going up, and the lower ball going down, so they "bounce" off each other
@@ -156,14 +122,9 @@ function draw(){
     }
     
     //Now that all the barrier/ball collisions have been handled, this loop draws each circle
-    for(var i = 0; i<shapeList.length; i++){
-        fill(shapeList[i].color);
-        if(shapeList[i].typeShape == 1){
-            ellipse(shapeList[i].xCoor+=shapeList[i].xSpeed, shapeList[i].yCoor+=shapeList[i].ySpeed, shapeList[i].dimensions[0]);
-        }
-        else{            
-            rect(shapeList[i].xCoor+=shapeList[i].xSpeed,shapeList[i].yCoor+=shapeList[i].ySpeed,shapeList[i].dimensions[0],heightOfShape(shapeList[i]));
-        }
+    for(var i = 0; i<ballList.length; i++){
+         fill(ballList[i].color);
+        ellipse(ballList[i].xCoor+=ballList[i].xSpeed, ballList[i].yCoor+=ballList[i].ySpeed, ballList[i].diameter);
     }
     
 }
@@ -173,45 +134,26 @@ function randomColor(){
     return [randomInteger(0,255),randomInteger(0,255),randomInteger(0,255)];
 }
 
-//Provides a random shape 
-function randomSizeShape(shape){
-    if(shape.typeShape!=3){
-        //Basically if it ain't a rectangle
-        shape.dimensions[0]=[random(0,50)];
-    }
-    else{
-        shape.dimensions[0]=[random(0,50),random(0,50)];
-    }
-}
-
 //Returns an array of random balls
-function makeRandomAmountOfRandomShapes(){
-     amountOfShapes = 0;
+function makeRandomAmountOfBalls(){
+     amountOfBalls = 0;
     //The list is of the potential amount of balls we want, and then the random picture randomly picks a number to make
-    var listOfPotentialShapeNumbers=[2,5,10,16];
-    amountOfShapes = randomInteger(listOfPotentialShapeNumbers);
+    var listOfPotentialBallNumbers=[2,5,10,16];
+    amountOfBalls = randomInteger(listOfPotentialBallNumbers);
     
     
     //Loops the amount of times that there are balls to make, creating a random ball each iteration
-    var shapeList=[];
-    for(var i = 0; i<amountOfShapes; i++){
-        shapeList.push(makeRandomShape());
+    var ballList=[];
+    for(var i = 0; i<amountOfBalls; i++){
+        ballList.push(makeRandomBall());
     }
     //Returns the list of balls
-    return shapeList;
+    return ballList;
 }
 
 //Makes A Totally Random Ball
-function makeRandomShape(){
-    var typeShape = random([1,2,3]);
-    var dimensions=[];
-    if(typeShape!=3){
-        dimensions = [randomInteger(1,50)];
-    }
-    else{
-        dimensions = [randomInteger(1,50),randomInteger(1,50)];
-    }
-    return new Shape(randomInteger(0,width),randomInteger(0,height),dimensions,randomColor(),randomInteger(-5,5),randomInteger(-5,5),typeShape);
+function makeRandomBall(){
+    return new Ball(randomInteger(0,width),randomInteger(0,height),randomInteger(0,100),randomColor(),randomInteger(-5,5),randomInteger(-5,5));
 }
 
 //Prompts for a mumber with a reason
@@ -228,49 +170,21 @@ function promptForANumber(reason){
 
 
 
-/*
-The library collide 2d for p5 provides a lot of different collision checkers
 
-This essentially uses the shape objects and plugs them in and gets the result
-*/
-function shapesInContact(shape1,shape2){
-    //Checks for different combinations of shapes to use the collide 2d library's functions
-    if(shape1.typeShape == 1 && shape2.typeShape == 1){
-        return collideCircleCircle(shape1.xCoor,shape1.yCoor,shape1.dimensions[0],shape2.xCoor,shape2.yCoor,shape2.dimensions[0]);
-    }
-    else if((shape1.typeShape == 2 || shape1.typeShape == 3) && shape2.typeShape == 1){
-        //If Shape 1 is a rectangle/square and Shape 2 is a circle then use rect circle with their dimensions  
-        
-        var heightRect = heightOfShape(shape1);//This variable is needed, because the array may or may not have a height value, thus the "height" must be determined based on shape size
-        
-        return collideRectCircle(shape1.xCoor,shape1.yCoor,shape1.dimensions[0],heightRect,shape2.xCoor,shape2.yCoor,shape2.dimensions[0]);
-    }
+function circlesInContact(ball1,ball2){
+    //If the sum of the radii of the two balls is less than the distance between their centers, then they're colliding
+    //Equal then they're touching
+    //Greater than the sum and they are away
     
-    else if((shape2.typeShape == 2 || shape2.typeShape == 3) && shape1.typeShape == 1){
-        //If Shape 2 is a rectangle/square and Shape 1 is a circle then use rect circle with their dimensions    
-        var heightRect = heightOfShape(shape2);//This variable is needed, because the array may or may not have a height value, thus the "height" must be determined based on shape size
-        
-        return collideRectCircle(shape2.xCoor,shape2.yCoor,shape2.dimensions[0],heightRect,shape1.xCoor,shape1.yCoor,shape1.dimensions[0]);
-    }
-    else if((shape1.typeShape == 2 || shape1.typeShape == 3) && (shape2.typeShape == 2 || shape2.typeShape == 3)){
-        //Basically both are rectangles
-        var heightRect1 = heightOfShape(shape1);//This variable is needed, because the array may or may not have a height value, thus the "height" must be determined based on shape size
-        var heightRect2 = heightOfShape(shape2);//This variable is needed, because the array may or may not have a height value, thus the "height" must be determined based on shape size
-        
-        return collideRectRect(shape1.xCoor,shape1.yCoor,shape1.dimensions[0],heightRect1,shape2.xCoor,shape2.yCoor,shape2.dimensions[0],heightRect2);
-    }
-    else{
+    //If they're colliding OR touching this returns true
+    var sumOfRadii = (ball1.diameter+ball2.diameter)/2;
+    var distanceBetweenCircles = distancePoints(ball1.xCoor,ball1.yCoor,ball2.xCoor,ball2.yCoor);
+    //Basically if they're apart then they aren't colliding, if they touch or intersect they're colliding
+    if(distanceBetweenCircles>sumOfRadii){
         return false;
-    }    
-}
-//Basically since some shapes don't have a height it returns back the width(whcih for like squares is the height too)
-function heightOfShape(shape){
-    if(shape.typeShape == 1 || shape.typeShape == 2){
-        return shape.dimensions[0];
     }
     else{
-        
-        return shape.dimensions[1];
+        return true;
     }
 }
 
@@ -285,39 +199,4 @@ function distancePoints(x1,y1,x2,y2){
 //Proccessing random, returns a random float in range so this basically just converts the random number to a actual integer
 function randomInteger(low,up){
     return parseInt(random(low,up));
-}
-
-//Basically whatever direction the base is, the sign of the addition determines whether the "magnitude" of the number stays the same
-/*
-(-20,1) -> -21
-(-20,-1) -> -19
-(20,1) -> 21
-(20,-1) -> 19
-*/
-function changeMagnitude(base,addition){
-    if(addition>0){
-            if(base>0){
-                return base+addition;   
-            }
-            else if(base<0){
-                return base-addition;
-            }
-            else{
-                return addition;
-            }        
-    }
-    else if(addition<0){
-            if(base>0){
-                return base+addition;
-            }
-            else if(base<0){
-                return base-addition;
-            }
-            else{
-                return addition;
-            }
-    }
-    else{
-            return base;
-    }
 }
